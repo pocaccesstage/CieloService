@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Implementation-Title: PoC Cielo API - Standalone
+Implementation-Version: 0-SNAPSHOT
+Built-By: eduardo.heitor
+Implementation-Vendor-Id: com.npwit.poc.api
+Build-Jdk: 1.8.0_121
+Implementation-URL: http://projects.spring.io/spring-boot/poc-cielo-ap
+ i-ParentPOM/poc-cielo-api/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+Main-Class: com.npwit.poc.cielo.main.Application
+

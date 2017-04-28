@@ -1,0 +1,47 @@
+server:
+  port: ${appPort:8600}
+
+# Spring dispatcher servlet (APIs) and actuator endpoint path (/admin/info, /admin/health, ...)
+server.servlet-path: /
+management.context-path: /admin
+
+# http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints
+endpoints:
+  enabled: false
+  info:
+    enabled: true
+  health:
+    enabled: true
+  metrics:
+    enabled: true
+
+info:
+  app:
+    name: @project.artifactId@
+  build:
+    version: @project.version@
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka/
+  instance:
+    hostname: ${hostName}
+    statusPageUrlPath: ${management.context-path}/info
+    healthCheckUrlPath: ${management.context-path}/health
+    preferIpAddress: true
+    metadataMap:
+      instanceId: ${spring.application.name}:${server.port}
+
+poc-cielo-api:
+  ribbon:
+    # Eureka vipAddress of the target service
+    DeploymentContextBasedVipAddresses: poc-cielo-api
+
+    #listOfServers: localhost:${SERVER.PORT}
+    NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+
+    # Interval to refresh the server list from the source (ms)
+    ServerListRefreshInterval: 30000

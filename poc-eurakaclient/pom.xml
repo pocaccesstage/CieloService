@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.1.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.npwit.poc.api</groupId>
+	<artifactId>poc-cielo-api-eurekaclient</artifactId>
+	<version>0-SNAPSHOT</version>
+	<packaging>${packaging.type}</packaging>
+	<name>PoC Cielo API Eureka Client</name>
+	<description>PoC Cielo API Eureka Client</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<start-class>com.npwit.cielo.poc.main.Application</start-class>
+		<packaging.type>jar</packaging.type>
+		<docker.image.prefix>npwit</docker.image.prefix>
+		<push.image>false</push.image>
+
+		<!-- Plugins -->
+		<maven-clean-plugin.version>2.5</maven-clean-plugin.version>
+		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+		<docker-maven-plugin-spotify.version>0.4.10</docker-maven-plugin-spotify.version>
+
+		<!-- Dependencies -->
+		<spring-cloud.version>Camden.SR2</spring-cloud.version>
+<!-- 		<tomcat.version>8.5.5</tomcat.version> -->
+
+		<!-- Test Dependencies -->
+		<rest-assured.version>2.9.0</rest-assured.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+	    <dependency>
+	        <groupId>org.springframework.cloud</groupId>
+	        <artifactId>spring-cloud-starter-eureka</artifactId>
+	    </dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-feign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-ribbon</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<compilerArguments>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+            <plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>${docker-maven-plugin-spotify.version}</version>
+				<!-- Include:
+					export DOCKER_HOST=tcp://docker:4243
+					in host executing mvn docker:build
+				-->
+				<!-- FIXME https://github.com/spotify/docker-maven-plugin#setup to push image to private registry -->
+				<configuration>
+					<!-- One or the other -->
+					<!-- First add server entry in settings.xml -->
+					<serverId>docker-hub</serverId>
+<!-- 					Uses ~/.docker/config.json created once logged in using "docker login" command -->
+<!-- 					<useConfigFile>true</useConfigFile> -->
+
+				    <imageName>${docker.image.prefix}/${project.artifactId}:${project.version}</imageName>
+				    <pushImage>${push.image}</pushImage>
+				    <forceTags>true</forceTags>
+					<imageTags>
+			           <imageTag>${project.version}</imageTag>
+			           <imageTag>latest</imageTag>
+			        </imageTags>
+	                <dockerDirectory>src/main/docker</dockerDirectory>
+	                <resources>
+	                    <resource>
+	                        <targetPath>/</targetPath>
+	                        <directory>${project.build.directory}</directory>
+	                        <include>${project.build.finalName}.jar</include>
+	                    </resource>
+	                </resources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
